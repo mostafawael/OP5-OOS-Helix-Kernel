@@ -322,8 +322,8 @@ config PM_GENERIC_DOMAINS_OF
 config CPU_PM
 	bool
 
-config PM_SUSPEND_DEBUG_OP
-        bool "Print pinctl clk regulator stats, when enter lpm_suspend"
-        depends on PM_SLEEP
-        default y
-
+config HELIX_ENGINE
+	  bool "Helix Engine"
+	  depends on PM
+	  ---help---
+	  Collect the sysfs files nodes for helix engine usage.

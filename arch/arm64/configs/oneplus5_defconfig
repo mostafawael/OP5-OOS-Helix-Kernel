@@ -37,6 +37,13 @@ CONFIG_DEFCONFIG_LIST="/lib/modules/$UNAME_RELEASE/.config"
 CONFIG_IRQ_WORK=y
 CONFIG_BUILDTIME_EXTABLE_SORT=y
 
+# Helix Engine
+#
+
+CONFIG_HELIX_ENGINE=y
+
+#
+
 #
 # General setup
 #

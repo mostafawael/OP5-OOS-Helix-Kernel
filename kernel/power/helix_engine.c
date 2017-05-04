@@ -20,6 +20,7 @@
 static struct kobject *helix_engine_kobj;
 static struct kobject *app_engine_kobj;
 static struct kobject *thermal_manager_kobj;
+static struct kobject *suspend_engine_kobj;
 
 #define define_string_show(_name, str_buf)				\
 static ssize_t _name##_show						\
@@ -68,6 +69,7 @@ static void null_cb(const char *attr) {
 
 static int throttlecap_value = 0;
 static int per_app_use_value = 0;
+static int enable_value = 1;
 
 define_int_show(throttlecap, throttlecap_value);
 define_int_store(throttlecap, throttlecap_value, null_cb);
@@ -77,17 +79,29 @@ define_int_show(per_app_use, per_app_use_value);
 define_int_store(per_app_use, per_app_use_value, null_cb);
 power_attr(per_app_use);
 
+define_int_show(enable, enable_value);
+define_int_store(enable, enable_value, null_cb);
+power_attr(enable);
+
 static struct attribute *helix_engine_g[] = {
+	&enable_attr.attr,
 	NULL,
 };
 
 static struct attribute *app_engine_g[] = {
 	&per_app_use_attr.attr,
+	&enable_attr.attr,
 	NULL,
 };
 
 static struct attribute *thermal_manager_g[] = {
 	&throttlecap_attr.attr,
+	&enable_attr.attr,
+	NULL,
+};
+
+static struct attribute *suspend_engine_g[] = {
+	&enable_attr.attr,
 	NULL,
 };
 
@@ -101,6 +115,10 @@ static struct attribute_group app_engine_attr_group = {
 
 static struct attribute_group thermal_manager_attr_group = {
 	.attrs = thermal_manager_g,
+};
+
+static struct attribute_group suspend_engine_attr_group = {
+	.attrs = suspend_engine_g,
 };
 
 static int __init helix_engine_init(void)
@@ -118,8 +136,9 @@ static int __init helix_engine_init(void)
 	
 	app_engine_kobj = kobject_create_and_add("app_engine", helix_engine_kobj);
 	thermal_manager_kobj = kobject_create_and_add("thermal_manager", helix_engine_kobj);
+	suspend_engine_kobj = kobject_create_and_add("suspend_engine", helix_engine_kobj);
 
-	if (!app_engine_kobj || !thermal_manager_kobj) {
+	if (!app_engine_kobj || !thermal_manager_kobj || !suspend_engine_kobj) {
 		pr_err("%s: Can not allocate enough memory.\n", __func__);
 		ret = -ENOMEM;
 		goto err;
@@ -131,6 +150,7 @@ static int __init helix_engine_init(void)
 	ret = sysfs_create_group(helix_engine_kobj, &helix_engine_attr_group);
 	ret |= sysfs_create_group(app_engine_kobj, &app_engine_attr_group);
 	ret |= sysfs_create_group(thermal_manager_kobj, &thermal_manager_attr_group);
+	ret |= sysfs_create_group(suspend_engine_kobj, &suspend_engine_attr_group);
 
 	if (ret) {
 		pr_err("%s: sysfs_create_group failed\n", __func__);
@@ -151,6 +171,7 @@ static void  __exit helix_engine_exit(void)
 	sysfs_remove_group(helix_engine_kobj, &helix_engine_attr_group);
 	sysfs_remove_group(app_engine_kobj, &app_engine_attr_group);
 	sysfs_remove_group(thermal_manager_kobj, &thermal_manager_attr_group);
+	sysfs_remove_group(suspend_engine_kobj, &suspend_engine_attr_group);
 }
 
 module_init(helix_engine_init);

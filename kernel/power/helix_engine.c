@@ -68,12 +68,17 @@ static void null_cb(const char *attr) {
 }
 
 static int throttlecap_value = 0;
+static int enginecap_value = 0;
 static int per_app_use_value = 0;
 static int enable_value = 1;
 
 define_int_show(throttlecap, throttlecap_value);
 define_int_store(throttlecap, throttlecap_value, null_cb);
 power_attr(throttlecap);
+
+define_int_show(enginecap, enginecap_value);
+define_int_store(enginecap, enginecap_value, null_cb);
+power_attr(enginecap);
 
 define_int_show(per_app_use, per_app_use_value);
 define_int_store(per_app_use, per_app_use_value, null_cb);
@@ -91,6 +96,7 @@ static struct attribute *helix_engine_g[] = {
 static struct attribute *app_engine_g[] = {
 	&per_app_use_attr.attr,
 	&enable_attr.attr,
+	&enginecap_attr.attr,
 	NULL,
 };
 

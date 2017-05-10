@@ -71,6 +71,7 @@ static int mode_value = 0;
 static int throttlecap_value = 0;
 static int enginecap_value = 0;
 static int per_app_use_value = 0;
+static int user_app_list_value = 0;
 static int enable_value = 1;
 
 define_int_show(mode, mode_value);
@@ -89,6 +90,10 @@ define_int_show(per_app_use, per_app_use_value);
 define_int_store(per_app_use, per_app_use_value, null_cb);
 power_attr(per_app_use);
 
+define_int_show(user_app_list, user_app_list_value);
+define_int_store(user_app_list, user_app_list_value, null_cb);
+power_attr(user_app_list);
+
 define_int_show(enable, enable_value);
 define_int_store(enable, enable_value, null_cb);
 power_attr(enable);
@@ -102,6 +107,7 @@ static struct attribute *app_engine_g[] = {
 	&per_app_use_attr.attr,
 	&enable_attr.attr,
 	&enginecap_attr.attr,
+	&user_app_list_attr.attr,
 	NULL,
 };
 

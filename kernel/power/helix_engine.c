@@ -67,10 +67,15 @@ static void null_cb(const char *attr) {
 	do { } while (0);
 }
 
+static int mode_value = 0;
 static int throttlecap_value = 0;
 static int enginecap_value = 0;
 static int per_app_use_value = 0;
 static int enable_value = 1;
+
+define_int_show(mode, mode_value);
+define_int_store(mode, mode_value, null_cb);
+power_attr(mode);
 
 define_int_show(throttlecap, throttlecap_value);
 define_int_store(throttlecap, throttlecap_value, null_cb);
@@ -103,6 +108,7 @@ static struct attribute *app_engine_g[] = {
 static struct attribute *thermal_manager_g[] = {
 	&throttlecap_attr.attr,
 	&enable_attr.attr,
+	&mode_attr.attr,
 	NULL,
 };
 

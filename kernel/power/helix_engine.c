@@ -76,10 +76,15 @@ static int enable_value = 1;
 static int battery_value = 0;
 static int balanced_value = 0;
 static int performance_value = 0;
+static int dynamic_throttlemode_value = 1;
 
 define_int_show(mode, mode_value);
 define_int_store(mode, mode_value, null_cb);
 power_attr(mode);
+
+define_int_show(dynamic_throttlemode, dynamic_throttlemode_value);
+define_int_store(dynamic_throttlemode, dynamic_throttlemode_value, null_cb);
+power_attr(dynamic_throttlemode);
 
 define_int_show(throttlecap, throttlecap_value);
 define_int_store(throttlecap, throttlecap_value, null_cb);
@@ -118,6 +123,7 @@ static struct attribute *app_engine_g[] = {
 	&per_app_use_attr.attr,
 	&enable_attr.attr,
 	&enginecap_attr.attr,
+	&dynamic_throttlemode_attr.attr,
 	NULL,
 };
 

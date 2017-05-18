@@ -68,15 +68,34 @@ static void null_cb(const char *attr) {
 	do { } while (0);
 }
 
+static int helix_engine_value = 1;
+static int thermal_manager_value = 1;
+static int app_engine_value = 1;
+static int suspend_engine_value = 1;
 static int mode_value = 0;
 static int throttlecap_value = 0;
 static int enginecap_value = 0;
 static int per_app_use_value = 0;
-static int enable_value = 1;
 static int battery_value = 0;
 static int balanced_value = 0;
 static int performance_value = 0;
 static int dynamic_throttlemode_value = 1;
+
+define_int_show(helix_engine, helix_engine_value);
+define_int_store(helix_engine, helix_engine_value, null_cb);
+power_attr(helix_engine);
+
+define_int_show(thermal_manager, thermal_manager_value);
+define_int_store(thermal_manager, thermal_manager_value, null_cb);
+power_attr(thermal_manager);
+
+define_int_show(app_engine, app_engine_value);
+define_int_store(app_engine, app_engine_value, null_cb);
+power_attr(app_engine);
+
+define_int_show(suspend_engine, suspend_engine_value);
+define_int_store(suspend_engine, suspend_engine_value, null_cb);
+power_attr(suspend_engine);
 
 define_int_show(mode, mode_value);
 define_int_store(mode, mode_value, null_cb);
@@ -98,10 +117,6 @@ define_int_show(per_app_use, per_app_use_value);
 define_int_store(per_app_use, per_app_use_value, null_cb);
 power_attr(per_app_use);
 
-define_int_show(enable, enable_value);
-define_int_store(enable, enable_value, null_cb);
-power_attr(enable);
-
 define_int_show(battery, battery_value);
 define_int_store(battery, battery_value, null_cb);
 power_attr(battery);
@@ -115,13 +130,13 @@ define_int_store(performance, performance_value, null_cb);
 power_attr(performance);
 
 static struct attribute *helix_engine_g[] = {
-	&enable_attr.attr,
+	&helix_engine_attr.attr,
 	NULL,
 };
 
 static struct attribute *app_engine_g[] = {
 	&per_app_use_attr.attr,
-	&enable_attr.attr,
+	&app_engine_attr.attr,
 	&enginecap_attr.attr,
 	&dynamic_throttlemode_attr.attr,
 	NULL,
@@ -136,13 +151,13 @@ static struct attribute *user_g[] = {
 
 static struct attribute *thermal_manager_g[] = {
 	&throttlecap_attr.attr,
-	&enable_attr.attr,
+	&thermal_manager_attr.attr,
 	&mode_attr.attr,
 	NULL,
 };
 
 static struct attribute *suspend_engine_g[] = {
-	&enable_attr.attr,
+	&suspend_engine_attr.attr,
 	NULL,
 };
 

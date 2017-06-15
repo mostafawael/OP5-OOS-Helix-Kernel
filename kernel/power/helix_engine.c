@@ -20,8 +20,7 @@
 static struct kobject *helix_engine_kobj;
 static struct kobject *app_engine_kobj;
 static struct kobject *user_kobj;
-static struct kobject *thermal_manager_kobj;
-static struct kobject *suspend_engine_kobj;
+static struct kobject *thermal_engine_kobj;
 
 #define define_string_show(_name, str_buf)				\
 static ssize_t _name##_show						\
@@ -68,34 +67,34 @@ static void null_cb(const char *attr) {
 	do { } while (0);
 }
 
-static int helix_engine_value = 1;
-static int thermal_manager_value = 1;
-static int app_engine_value = 1;
-static int suspend_engine_value = 1;
+static int helix_engine_enable_value = 1;
+static int thermal_engine_enable_value = 1;
+static int app_engine_enable_value = 1;
+static int suspend_engine_enable_value = 1;
 static int mode_value = 0;
 static int throttlecap_value = 0;
 static int enginecap_value = 0;
-static int per_app_use_value = 0;
+static int per_app_in_use_value = 0;
 static int battery_value = 0;
 static int balanced_value = 0;
 static int performance_value = 0;
 static int dynamic_throttlemode_value = 1;
 
-define_int_show(helix_engine, helix_engine_value);
-define_int_store(helix_engine, helix_engine_value, null_cb);
-power_attr(helix_engine);
+define_int_show(helix_engine_enable, helix_engine_enable_value);
+define_int_store(helix_engine_enable, helix_engine_enable_value, null_cb);
+power_attr(helix_engine_enable);
 
-define_int_show(thermal_manager, thermal_manager_value);
-define_int_store(thermal_manager, thermal_manager_value, null_cb);
-power_attr(thermal_manager);
+define_int_show(thermal_engine_enable, thermal_engine_enable_value);
+define_int_store(thermal_engine_enable, thermal_engine_enable_value, null_cb);
+power_attr(thermal_engine_enable);
 
-define_int_show(app_engine, app_engine_value);
-define_int_store(app_engine, app_engine_value, null_cb);
-power_attr(app_engine);
+define_int_show(app_engine_enable, app_engine_enable_value);
+define_int_store(app_engine_enable, app_engine_enable_value, null_cb);
+power_attr(app_engine_enable);
 
-define_int_show(suspend_engine, suspend_engine_value);
-define_int_store(suspend_engine, suspend_engine_value, null_cb);
-power_attr(suspend_engine);
+define_int_show(suspend_engine_enable, suspend_engine_enable_value);
+define_int_store(suspend_engine_enable, suspend_engine_enable_value, null_cb);
+power_attr(suspend_engine_enable);
 
 define_int_show(mode, mode_value);
 define_int_store(mode, mode_value, null_cb);
@@ -113,9 +112,9 @@ define_int_show(enginecap, enginecap_value);
 define_int_store(enginecap, enginecap_value, null_cb);
 power_attr(enginecap);
 
-define_int_show(per_app_use, per_app_use_value);
-define_int_store(per_app_use, per_app_use_value, null_cb);
-power_attr(per_app_use);
+define_int_show(per_app_in_use, per_app_in_use_value);
+define_int_store(per_app_in_use, per_app_in_use_value, null_cb);
+power_attr(per_app_in_use);
 
 define_int_show(battery, battery_value);
 define_int_store(battery, battery_value, null_cb);
@@ -130,13 +129,15 @@ define_int_store(performance, performance_value, null_cb);
 power_attr(performance);
 
 static struct attribute *helix_engine_g[] = {
-	&helix_engine_attr.attr,
+	&helix_engine_enable_attr.attr,
+	&app_engine_enable_attr.attr,
+	&thermal_engine_enable_attr.attr,
+	&suspend_engine_enable_attr.attr,
 	NULL,
 };
 
 static struct attribute *app_engine_g[] = {
-	&per_app_use_attr.attr,
-	&app_engine_attr.attr,
+	&per_app_in_use_attr.attr,
 	&enginecap_attr.attr,
 	&dynamic_throttlemode_attr.attr,
 	NULL,
@@ -149,15 +150,9 @@ static struct attribute *user_g[] = {
 	NULL,
 };
 
-static struct attribute *thermal_manager_g[] = {
+static struct attribute *thermal_engine_g[] = {
 	&throttlecap_attr.attr,
-	&thermal_manager_attr.attr,
 	&mode_attr.attr,
-	NULL,
-};
-
-static struct attribute *suspend_engine_g[] = {
-	&suspend_engine_attr.attr,
 	NULL,
 };
 
@@ -173,12 +168,8 @@ static struct attribute_group user_attr_group = {
 	.attrs = user_g,
 };
 
-static struct attribute_group thermal_manager_attr_group = {
-	.attrs = thermal_manager_g,
-};
-
-static struct attribute_group suspend_engine_attr_group = {
-	.attrs = suspend_engine_g,
+static struct attribute_group thermal_engine_attr_group = {
+	.attrs = thermal_engine_g,
 };
 
 static int __init helix_engine_init(void)
@@ -196,10 +187,9 @@ static int __init helix_engine_init(void)
 	
 	app_engine_kobj = kobject_create_and_add("app_engine", helix_engine_kobj);
 	user_kobj = kobject_create_and_add("user", app_engine_kobj);
-	thermal_manager_kobj = kobject_create_and_add("thermal_manager", helix_engine_kobj);
-	suspend_engine_kobj = kobject_create_and_add("suspend_engine", helix_engine_kobj);
+	thermal_engine_kobj = kobject_create_and_add("thermal_engine", helix_engine_kobj);
 
-	if (!app_engine_kobj || !user_kobj || !thermal_manager_kobj || !suspend_engine_kobj) {
+	if (!app_engine_kobj || !user_kobj || !thermal_engine_kobj) {
 		pr_err("%s: Can not allocate enough memory.\n", __func__);
 		ret = -ENOMEM;
 		goto err;
@@ -211,8 +201,7 @@ static int __init helix_engine_init(void)
 	ret = sysfs_create_group(helix_engine_kobj, &helix_engine_attr_group);
 	ret |= sysfs_create_group(app_engine_kobj, &app_engine_attr_group);
 	ret |= sysfs_create_group(user_kobj, &user_attr_group);
-	ret |= sysfs_create_group(thermal_manager_kobj, &thermal_manager_attr_group);
-	ret |= sysfs_create_group(suspend_engine_kobj, &suspend_engine_attr_group);
+	ret |= sysfs_create_group(thermal_engine_kobj, &thermal_engine_attr_group);
 
 	if (ret) {
 		pr_err("%s: sysfs_create_group failed\n", __func__);
@@ -233,8 +222,7 @@ static void  __exit helix_engine_exit(void)
 	sysfs_remove_group(helix_engine_kobj, &helix_engine_attr_group);
 	sysfs_remove_group(app_engine_kobj, &app_engine_attr_group);
 	sysfs_remove_group(user_kobj, &user_attr_group);
-	sysfs_remove_group(thermal_manager_kobj, &thermal_manager_attr_group);
-	sysfs_remove_group(suspend_engine_kobj, &suspend_engine_attr_group);
+	sysfs_remove_group(thermal_engine_kobj, &thermal_engine_attr_group);
 }
 
 module_init(helix_engine_init);

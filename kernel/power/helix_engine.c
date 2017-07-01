@@ -21,6 +21,8 @@ static struct kobject *helix_engine_kobj;
 static struct kobject *app_engine_kobj;
 static struct kobject *user_kobj;
 static struct kobject *thermal_engine_kobj;
+static struct kobject *suspend_engine_kobj;
+static struct kobject *powersaver_engine_kobj;
 
 #define define_string_show(_name, str_buf)				\
 static ssize_t _name##_show						\
@@ -78,6 +80,8 @@ static int per_app_in_use_value = 0;
 static int battery_value = 0;
 static int balanced_value = 0;
 static int performance_value = 0;
+static int lcluster_freq_value = 1036800;
+static int bcluster_freq_value = 1036800;
 
 define_int_show(helix_engine_enable, helix_engine_enable_value);
 define_int_store(helix_engine_enable, helix_engine_enable_value, null_cb);
@@ -123,6 +127,14 @@ define_int_show(performance, performance_value);
 define_int_store(performance, performance_value, null_cb);
 power_attr(performance);
 
+define_int_show(lcluster_freq, lcluster_freq_value);
+define_int_store(lcluster_freq, lcluster_freq_value, null_cb);
+power_attr(lcluster_freq);
+
+define_int_show(bcluster_freq, bcluster_freq_value);
+define_int_store(bcluster_freq, bcluster_freq_value, null_cb);
+power_attr(bcluster_freq);
+
 static struct attribute *helix_engine_g[] = {
 	&helix_engine_enable_attr.attr,
 	&app_engine_enable_attr.attr,
@@ -150,6 +162,18 @@ static struct attribute *thermal_engine_g[] = {
 	NULL,
 };
 
+static struct attribute *powersaver_engine_g[] = {
+	&lcluster_freq_attr.attr,
+	&bcluster_freq_attr.attr,
+	NULL,
+};
+
+static struct attribute *suspend_engine_g[] = {
+	&lcluster_freq_attr.attr,
+	&bcluster_freq_attr.attr,
+	NULL,
+};
+
 static struct attribute_group helix_engine_attr_group = {
 	.attrs = helix_engine_g,
 };
@@ -164,6 +188,14 @@ static struct attribute_group user_attr_group = {
 
 static struct attribute_group thermal_engine_attr_group = {
 	.attrs = thermal_engine_g,
+};
+
+static struct attribute_group powersaver_engine_attr_group = {
+	.attrs = powersaver_engine_g,
+};
+
+static struct attribute_group suspend_engine_attr_group = {
+	.attrs = suspend_engine_g,
 };
 
 static int __init helix_engine_init(void)
@@ -182,8 +214,10 @@ static int __init helix_engine_init(void)
 	app_engine_kobj = kobject_create_and_add("app_engine", helix_engine_kobj);
 	user_kobj = kobject_create_and_add("user", app_engine_kobj);
 	thermal_engine_kobj = kobject_create_and_add("thermal_engine", helix_engine_kobj);
+	powersaver_engine_kobj = kobject_create_and_add("powersaver_engine", helix_engine_kobj);
+	suspend_engine_kobj = kobject_create_and_add("suspend_engine", helix_engine_kobj);
 
-	if (!app_engine_kobj || !user_kobj || !thermal_engine_kobj) {
+	if (!app_engine_kobj || !user_kobj || !thermal_engine_kobj || !powersaver_engine_kobj || !suspend_engine_kobj) {
 		pr_err("%s: Can not allocate enough memory.\n", __func__);
 		ret = -ENOMEM;
 		goto err;
@@ -196,6 +230,8 @@ static int __init helix_engine_init(void)
 	ret |= sysfs_create_group(app_engine_kobj, &app_engine_attr_group);
 	ret |= sysfs_create_group(user_kobj, &user_attr_group);
 	ret |= sysfs_create_group(thermal_engine_kobj, &thermal_engine_attr_group);
+	ret |= sysfs_create_group(powersaver_engine_kobj, &powersaver_engine_attr_group);
+	ret |= sysfs_create_group(suspend_engine_kobj, &suspend_engine_attr_group);
 
 	if (ret) {
 		pr_err("%s: sysfs_create_group failed\n", __func__);
@@ -217,6 +253,8 @@ static void  __exit helix_engine_exit(void)
 	sysfs_remove_group(app_engine_kobj, &app_engine_attr_group);
 	sysfs_remove_group(user_kobj, &user_attr_group);
 	sysfs_remove_group(thermal_engine_kobj, &thermal_engine_attr_group);
+	sysfs_remove_group(powersaver_engine_kobj, &powersaver_engine_attr_group);
+	sysfs_remove_group(suspend_engine_kobj, &suspend_engine_attr_group);
 }
 
 module_init(helix_engine_init);

@@ -76,15 +76,27 @@ static int helix_engine_enable_value = 1;
 static int thermal_engine_enable_value = 1;
 static int app_engine_enable_value = 1;
 static int suspend_engine_enable_value = 1;
+
 static int mode_value = 0;
 static int throttlecap_value = 0;
+
+static int battery_lfreq_value = 0;
+static int battery_bfreq_value = 0;
+static int balanced_lfreq_value = 0;
+static int balanced_bfreq_value = 0;
+static int performance_lfreq_value = 0;
+static int performance_bfreq_value = 0;
 static int enginecap_value = 0;
 static int per_app_in_use_value = 0;
 static int battery_value = 0;
 static int balanced_value = 0;
 static int performance_value = 0;
-static int lcluster_freq_value = 1036800;
-static int bcluster_freq_value = 1036800;
+
+static int suspend_lfreq_value = 0;
+static int suspend_bfreq_value = 0;
+
+static int powersave_lfreq_value = 0;
+static int powersave_bfreq_value = 0;
 
 define_int_show(helix_engine_enable, helix_engine_enable_value);
 define_int_store(helix_engine_enable, helix_engine_enable_value, null_cb);
@@ -130,13 +142,45 @@ define_int_show(performance, performance_value);
 define_int_store(performance, performance_value, null_cb);
 power_attr(performance);
 
-define_int_show(lcluster_freq, lcluster_freq_value);
-define_int_store(lcluster_freq, lcluster_freq_value, null_cb);
-power_attr(lcluster_freq);
+define_int_show(suspend_lfreq, suspend_lfreq_value);
+define_int_store(suspend_lfreq, suspend_lfreq_value, null_cb);
+power_attr(suspend_lfreq);
 
-define_int_show(bcluster_freq, bcluster_freq_value);
-define_int_store(bcluster_freq, bcluster_freq_value, null_cb);
-power_attr(bcluster_freq);
+define_int_show(suspend_bfreq, suspend_bfreq_value);
+define_int_store(suspend_bfreq, suspend_bfreq_value, null_cb);
+power_attr(suspend_bfreq);
+
+define_int_show(powersave_lfreq, powersave_lfreq_value);
+define_int_store(powersave_lfreq, powersave_lfreq_value, null_cb);
+power_attr(powersave_lfreq);
+
+define_int_show(powersave_bfreq, powersave_bfreq_value);
+define_int_store(powersave_bfreq, powersave_bfreq_value, null_cb);
+power_attr(powersave_bfreq);
+
+define_int_show(battery_lfreq, battery_lfreq_value);
+define_int_store(battery_lfreq, battery_lfreq_value, null_cb);
+power_attr(battery_lfreq);
+
+define_int_show(battery_bfreq, battery_bfreq_value);
+define_int_store(battery_bfreq, battery_bfreq_value, null_cb);
+power_attr(battery_bfreq);
+
+define_int_show(balanced_lfreq, balanced_lfreq_value);
+define_int_store(balanced_lfreq, balanced_lfreq_value, null_cb);
+power_attr(balanced_lfreq);
+
+define_int_show(balanced_bfreq, balanced_bfreq_value);
+define_int_store(balanced_bfreq, balanced_bfreq_value, null_cb);
+power_attr(balanced_bfreq);
+
+define_int_show(performance_lfreq, performance_lfreq_value);
+define_int_store(performance_lfreq, performance_lfreq_value, null_cb);
+power_attr(performance_lfreq);
+
+define_int_show(performance_bfreq, performance_bfreq_value);
+define_int_store(performance_bfreq, performance_bfreq_value, null_cb);
+power_attr(performance_bfreq);
 
 static struct attribute *helix_engine_g[] = {
 	&helix_engine_enable_attr.attr,
@@ -153,20 +197,20 @@ static struct attribute *app_engine_g[] = {
 };
 
 static struct attribute *battery_freqs_g[] = {
-	&lcluster_freq_attr.attr,
-	&bcluster_freq_attr.attr,
+	&battery_lfreq_attr.attr,
+	&battery_bfreq_attr.attr,
 	NULL,
 };
 
 static struct attribute *balanced_freqs_g[] = {
-	&lcluster_freq_attr.attr,
-	&bcluster_freq_attr.attr,
+	&balanced_lfreq_attr.attr,
+	&balanced_bfreq_attr.attr,
 	NULL,
 };
 
 static struct attribute *performance_freqs_g[] = {
-	&lcluster_freq_attr.attr,
-	&bcluster_freq_attr.attr,
+	&performance_lfreq_attr.attr,
+	&performance_bfreq_attr.attr,
 	NULL,
 };
 
@@ -184,14 +228,14 @@ static struct attribute *thermal_engine_g[] = {
 };
 
 static struct attribute *powersaver_engine_g[] = {
-	&lcluster_freq_attr.attr,
-	&bcluster_freq_attr.attr,
+	&powersave_lfreq_attr.attr,
+	&powersave_bfreq_attr.attr,
 	NULL,
 };
 
 static struct attribute *suspend_engine_g[] = {
-	&lcluster_freq_attr.attr,
-	&bcluster_freq_attr.attr,
+	&suspend_lfreq_attr.attr,
+	&suspend_bfreq_attr.attr,
 	NULL,
 };
 

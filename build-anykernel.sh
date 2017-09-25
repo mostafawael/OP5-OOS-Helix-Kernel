@@ -34,10 +34,10 @@ export CCACHE=ccache
 # Paths
 KERNEL_DIR=`pwd`
 KBUILD_OUTPUT="${KERNEL_DIR}/out"
-REPACK_DIR="${HOME}/android/source/kernel/AnyKernel2"
-PATCH_DIR="${HOME}/android/source/kernel/AnyKernel2/patch"
-MODULES_DIR="${HOME}/android/source/kernel/AnyKernel2/modules"
-ZIP_MOVE="${HOME}/android/source/zips/OP5-zips"
+REPACK_DIR="${HOME}/Documents/anykernel2"
+PATCH_DIR="${HOME}/Documents/anykernel2/patch"
+MODULES_DIR="${HOME}/Documents/anykernel2/modules"
+ZIP_MOVE="${HOME}/Documents/kernel-builds"
 ZIMAGE_DIR="$KBUILD_OUTPUT/arch/arm64/boot"
 
 # Create output directory
@@ -96,7 +96,7 @@ case "$choice" in
         export CROSS_COMPILE=${HOME}/android/source/toolchains/LINARO-aarch64-linux-gnu-4.9.4-012017/bin/aarch64-linux-gnu-
         break;;
     "LINARO-aarch64-linux-gnu-6.3.1-052017")
-        export CROSS_COMPILE=${HOME}/android/source/toolchains/LINARO-aarch64-linux-gnu-6.3.1-052017/bin/aarch64-linux-gnu-
+        export CROSS_COMPILE=${HOME}/Documents/toolchains/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
         break;;
     "LINARO-aarch64-linux-gnu-7.1.1-052017")
         export CROSS_COMPILE=${HOME}/android/source/toolchains/LINARO-aarch64-linux-gnu-7.1.1-052017/bin/aarch64-linux-gnu-
